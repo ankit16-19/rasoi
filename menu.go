@@ -8,8 +8,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	. "github.com/ad1619/rasoi/dao"
-	. "github.com/ad1619/rasoi/models"
+	. "github.com/ankit16-19/rasoi/dao"
+	. "github.com/ankit16-19/rasoi/models"
 )
 
 var mdao = MenuDAO{}

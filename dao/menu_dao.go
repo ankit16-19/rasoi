@@ -1,8 +1,8 @@
 package dao
 
 import (
-	. "github.com/ad1619/rasoi/dbConnection"
-	. "github.com/ad1619/rasoi/models"
+	. "github.com/ankit16-19/rasoi/dbConnection"
+	. "github.com/ankit16-19/rasoi/models"
 	"gopkg.in/mgo.v2/bson"
 )
 

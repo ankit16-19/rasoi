@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	. "github.com/ad1619/rasoi/dbConnection"
+	. "github.com/ankit16-19/rasoi/dbConnection"
 )
 
 func init() {
