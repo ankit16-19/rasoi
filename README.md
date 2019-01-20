@@ -13,8 +13,8 @@
 
 ## To-Do
 
-- [ ] Add JWT authentication using ```Canopy Guard```
+- [x] Update ReadMe
+- [] Add JWT authentication using ```Canopy Guard```
 - [ ] Add Docker
-- [ ] Update ReadMe
 - [ ] Add Admin panel
 - [ ] Add PDF support
