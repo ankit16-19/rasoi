@@ -14,7 +14,7 @@
 ## To-Do
 
 - [x] Update ReadMe
-- [] Add JWT authentication using ```Canopy Guard```
+- [ ] Add JWT authentication using ```Canopy Guard```
 - [ ] Add Docker
 - [ ] Add Admin panel
 - [ ] Add PDF support
