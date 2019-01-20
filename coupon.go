@@ -44,11 +44,9 @@ func GetCouponByDateAndID(w http.ResponseWriter, r *http.Request) {
 		if err.Error() == "not found" {
 			RespondWithJSON(w, http.StatusOK, coupon)
 			return
-		} else {
-			RespondWithError(w, http.StatusBadRequest, "invalid Coupon ID and Date")
-			return
 		}
-
+		RespondWithError(w, http.StatusBadRequest, "invalid Coupon ID and Date")
+		return
 	}
 	RespondWithJSON(w, http.StatusOK, coupon)
 }
