@@ -39,8 +39,8 @@ func CreateMenu(w http.ResponseWriter, r *http.Request) {
 	dates := WholeWeekDates(time.Now())
 
 	for i := range days {
-		reflect.ValueOf(&menu.MessUP).Elem().FieldByName(days[i]).FieldByName("Date").SetString(GetDateFromTime(dates[i]))
-		reflect.ValueOf(&menu.MessDown).Elem().FieldByName(days[i]).FieldByName("Date").SetString(GetDateFromTime(dates[i]))
+		reflect.ValueOf(&menu.MessUP).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
+		reflect.ValueOf(&menu.MessDown).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
 	}
 
 	if err := mdao.Insert(menu); err != nil {

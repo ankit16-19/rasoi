@@ -34,6 +34,6 @@ var routes = Routes{
 
 	// All menu Routes
 	Route{"GetAllMenu", "GET", "/menu", GetAllMenu},
-	//Route{"CreateMenu", "POST", "/menu", CreateMenu},
+	Route{"CreateMenu", "POST", "/menu", CreateMenu},
 	Route{"UpdateMenu", "PUT", "/menu", UpdateMenu},
 }
