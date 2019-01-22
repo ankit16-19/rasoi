@@ -18,6 +18,6 @@ func (c *DAO) Connect() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	Db = session.DB("test")
+	Db = session.DB("rasoi")
 
 }

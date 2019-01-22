@@ -46,26 +46,23 @@ import (
 // 	IsMessup   bool `bson:"ismessup" json:"isMessUp"`
 // }
 
-// StudentCouponInfo :
-type StudentCouponInfo struct {
+type studentCouponInfo struct {
 	UserID string
 	Gender string
 	Total  int
 }
 
-// TotalCouponCount :
-type TotalCouponCount struct {
-	Mon TotalFoodForDay
-	Tue TotalFoodForDay
-	Wed TotalFoodForDay
-	Thr TotalFoodForDay
-	Fri TotalFoodForDay
-	Sat TotalFoodForDay
-	Sun TotalFoodForDay
+type totalCouponCount struct {
+	Mon totalFoodForDay
+	Tue totalFoodForDay
+	Wed totalFoodForDay
+	Thr totalFoodForDay
+	Fri totalFoodForDay
+	Sat totalFoodForDay
+	Sun totalFoodForDay
 }
 
-// TotalFoodForDay :
-type TotalFoodForDay struct {
+type totalFoodForDay struct {
 	BVeg  int
 	BNVeg int
 	LVeg  int
@@ -89,7 +86,7 @@ type TotalFoodForDay struct {
 // 	// 	}
 // 	// }
 
-// 	// studentinfo := [10]StudentCouponInfo{}
+// 	// studentinfo := [10]studentCouponInfo{}
 // 	// for i, si := range studentinfo {
 // 	// 	PrintStudentCouponInfoToPdf(i, si, pdf, "Mess-1")
 // 	// }
@@ -101,7 +98,7 @@ type TotalFoodForDay struct {
 // }
 
 // PrintStudentCouponInfoToPdf :
-func PrintStudentCouponInfoToPdf(srl int, s StudentCouponInfo, p *gofpdf.Fpdf, mess string) {
+func PrintStudentCouponInfoToPdf(srl int, s studentCouponInfo, p *gofpdf.Fpdf, mess string) {
 	var l, h float64
 	l = 39
 	h = 10
@@ -124,7 +121,7 @@ func PrintStudentCouponInfoToPdf(srl int, s StudentCouponInfo, p *gofpdf.Fpdf, m
 }
 
 // PrintTotalCountToPDF :
-func PrintTotalCountToPDF(t TotalCouponCount, p *gofpdf.Fpdf, mess string) {
+func PrintTotalCountToPDF(t totalCouponCount, p *gofpdf.Fpdf, mess string) {
 	var l, h float64
 	l = 25
 	h = 10
