@@ -13,8 +13,9 @@
 
 ## To-Do
 
+- [x] Update ReadMe
+- [ ] Add swag => To generate API Documentation automatically
 - [ ] Add JWT authentication using ```Canopy Guard```
 - [ ] Add Docker
-- [ ] Update ReadMe
 - [ ] Add Admin panel
 - [ ] Add PDF support
