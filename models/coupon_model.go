@@ -10,6 +10,10 @@ import (
 type Coupon struct {
 	ID           bson.ObjectId `bson:"_id" json:"id"`
 	Userid       string        `bson:"userid" json:"userid"`
+	Gender       string        `bson:"gender" json:"gender"`
+	Amount1      int           `bson:"amount1" json:"amount1"`
+	Amount2      int           `bson:"amount2" json:"mount2"`
+	Total        int           `bson:"Total" json:"Total"`
 	WeekStartDay time.Time     `bson:"weekstartdate" json:"weekstartdate"`
 	Coupon       CouponForWeek `bson:"coupon" json:"coupon"`
 }

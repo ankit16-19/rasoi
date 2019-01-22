@@ -21,8 +21,8 @@ func FirstDayofWeek(t time.Time) time.Time {
 func WholeWeekDates(t time.Time) []time.Time {
 	var array []time.Time
 	t = FirstDayofWeek(t)
-	// Add 7 days to get next week monday date
-	t = t.AddDate(0, 0, 7)
+	// // Add 7 days to get next week monday date
+	// t = t.AddDate(0, 0, 7)
 	array = append(array, t)
 	for t.Weekday() != time.Sunday {
 		t = t.AddDate(0, 0, 1)
