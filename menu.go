@@ -36,7 +36,7 @@ func CreateMenu(w http.ResponseWriter, r *http.Request) {
 
 	// set Date for every entry
 	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
-	dates := WholeWeekDates(time.Now())
+	dates := WholeWeekDates(time.Now().AddDate(0, 0, 7))
 
 	for i := range days {
 		reflect.ValueOf(&menu.MessUP).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
@@ -61,7 +61,7 @@ func UpdateMenu(w http.ResponseWriter, r *http.Request) {
 	}
 	// set Date for every entry
 	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
-	dates := WholeWeekDates(time.Now())
+	dates := WholeWeekDates(time.Now().AddDate(0, 0, 7))
 
 	for i := range days {
 		reflect.ValueOf(&menu.MessUP).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
@@ -82,6 +82,14 @@ func UpdateMenuDateIfWeekChange() error {
 	}
 	// compare last sunday date with curretn date
 	if time.Now().After(menus[0].MessUP.Sun.Date) {
+		// set Date for every entry
+		days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
+		dates := WholeWeekDates(time.Now())
+
+		for i := range days {
+			reflect.ValueOf(&menus[0].MessUP).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
+			reflect.ValueOf(&menus[0].MessDown).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
+		}
 		if err := mdao.Update(menus[0]); err != nil {
 			return err
 		}
