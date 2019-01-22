@@ -38,7 +38,8 @@ type CouponForDay struct {
 
 // FoodType : FoodStructure for a time
 type FoodType struct {
-	IsSelected bool `bson:"isSelected" json:"isSelected"`
-	IsVeg      bool `bson:"isVeg" json:"isVeg"`
-	IsMessup   bool `bson:"ismessup" json:"isMessUp"`
+	IsSelected bool   `bson:"isSelected" json:"isSelected"`
+	IsVeg      bool   `bson:"isVeg" json:"isVeg"`
+	IsMessup   bool   `bson:"ismessup" json:"isMessUp"`
+	Food       string `bson:"food" json:"food"`
 }
