@@ -37,7 +37,7 @@ func (c *CouponDAO) FindByDateAndID(id string, date string) (Coupon, error) {
 func (c *CouponDAO) Insert(coupon Coupon) error {
 	cc := Db.C(c.Collection)
 	index := mgo.Index{
-		Key:    []string{"userid", "date"},
+		Key:    []string{"userid", "weekstartdate"},
 		Unique: true,
 	}
 	if err := cc.EnsureIndex(index); err != nil {
