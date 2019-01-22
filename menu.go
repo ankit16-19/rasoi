@@ -61,7 +61,7 @@ func UpdateMenu(w http.ResponseWriter, r *http.Request) {
 	}
 	// set Date for every entry
 	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
-	dates := WholeWeekDates(time.Now())
+	dates := WholeWeekDates(time.Now().AddDate(0, 0, 7))
 
 	for i := range days {
 		reflect.ValueOf(&menu.MessUP).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
