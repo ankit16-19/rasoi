@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -46,6 +47,7 @@ func GetCouponByDateAndID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		RespondWithError(w, http.StatusBadRequest, "invalid Coupon ID and Date")
+		fmt.Print(err)
 		return
 	}
 	RespondWithJSON(w, http.StatusOK, coupon)
