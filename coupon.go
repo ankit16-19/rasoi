@@ -62,7 +62,12 @@ func CreateCoupon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	coupon.ID = bson.NewObjectId()
-	coupon.WeekStartDay = FirstDayofWeek(time.Now().AddDate(0, 0, 7))
+	t, err := time.Parse("2006-01-02", GetDateFromTime(FirstDayofWeek(time.Now().AddDate(0, 0, 7))))
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	coupon.WeekStartDay = t
 	if err := cdao.Insert(coupon); err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
