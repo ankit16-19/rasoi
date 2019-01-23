@@ -35,7 +35,7 @@ func (c *CouponDAO) FindByDateAndID(id string, date string) (Coupon, error) {
 	if err2 != nil {
 		return coupon, err2
 	}
-	err := Db.C(c.Collection).Find(bson.M{"userid": id, "weekstartdate": t}).One(&coupon)
+	err := Db.C(c.Collection).Find(bson.M{"userid": id, "weekstartdate": bson.M{"$gte": t, "$lt": t.AddDate(0, 0, 1)}}).One(&coupon)
 	return coupon, err
 }
 

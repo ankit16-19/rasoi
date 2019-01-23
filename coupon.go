@@ -39,7 +39,7 @@ func GetCouponByUserID(w http.ResponseWriter, r *http.Request) {
 // GetCouponByDateAndID :
 func GetCouponByDateAndID(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	coupon, err := cdao.FindByDateAndID(params["id"], params["weekstartdate"])
+	coupon, err := cdao.FindByDateAndID(params["id"], params["date"])
 	if err != nil {
 		// if response date is empty
 		if err.Error() == "not found" {
