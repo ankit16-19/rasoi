@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -61,13 +62,17 @@ func CreateCoupon(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+	// Create ID for mongodb
 	coupon.ID = bson.NewObjectId()
+	// Get next week first date
 	t, err := time.Parse("2006-01-02", GetDateFromTime(FirstDayofWeek(time.Now().AddDate(0, 0, 7))))
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	CalculateCouponPrice(&coupon)
 	coupon.WeekStartDay = t
+	// Add coupon to datebase
 	if err := cdao.Insert(coupon); err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -83,6 +88,7 @@ func UpdateCoupon(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+	CalculateCouponPrice(&coupon)
 	if err := cdao.Update(coupon); err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -107,4 +113,39 @@ func DeleteCoupon(w http.ResponseWriter, r *http.Request) {
 
 func init() {
 	cdao.Collection = "coupons"
+}
+
+// CalculateCouponPrice :
+func CalculateCouponPrice(c *Coupon) {
+	price := []int{10, 25, 25}
+	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
+	daytime := []string{"Breakfast", "Lunch", "Dinner"}
+
+	for _, day := range days {
+		for j, dt := range daytime {
+			// if Coupon selected
+			if int(reflect.ValueOf(c.Coupon).Elem().FieldByName(day).FieldByName(dt).FieldByName("IsSelected").Int()) == 1 {
+				// if Messup
+				if int(reflect.ValueOf(c.Coupon).Elem().FieldByName(day).FieldByName(dt).FieldByName("IsMessup").Int()) == 1 {
+					if j == 0 {
+						c.Amount1 += price[j]
+					} else if j == 1 {
+						c.Amount1 += price[j]
+					} else if j == 2 {
+						c.Amount1 += price[j]
+					}
+
+				} else {
+					if j == 0 {
+						c.Amount2 += price[j]
+					} else if j == 1 {
+						c.Amount2 += price[j]
+					} else if j == 2 {
+						c.Amount2 += price[j]
+					}
+				}
+			}
+		}
+	}
+	c.Total = c.Amount1 + c.Amount2
 }
