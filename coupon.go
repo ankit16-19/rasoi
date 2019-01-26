@@ -117,6 +117,7 @@ func init() {
 
 // CalculateCouponPrice :
 func CalculateCouponPrice(c *Coupon) {
+	c.Amount1, c.Amount2, c.Total = 0, 0, 0
 	price := []int{10, 25, 25}
 	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
 	daytime := []string{"Breakfast", "Lunch", "Dinner"}
