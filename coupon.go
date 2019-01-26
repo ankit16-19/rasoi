@@ -124,9 +124,9 @@ func CalculateCouponPrice(c *Coupon) {
 	for _, day := range days {
 		for j, dt := range daytime {
 			// if Coupon selected
-			if int(reflect.ValueOf(c.Coupon).Elem().FieldByName(day).FieldByName(dt).FieldByName("IsSelected").Int()) == 1 {
+			if reflect.ValueOf(&c.Coupon).Elem().FieldByName(day).FieldByName(dt).FieldByName("IsSelected").Bool() {
 				// if Messup
-				if int(reflect.ValueOf(c.Coupon).Elem().FieldByName(day).FieldByName(dt).FieldByName("IsMessup").Int()) == 1 {
+				if reflect.ValueOf(&c.Coupon).Elem().FieldByName(day).FieldByName(dt).FieldByName("IsMessup").Bool() {
 					if j == 0 {
 						c.Amount1 += price[j]
 					} else if j == 1 {
