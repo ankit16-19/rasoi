@@ -30,7 +30,7 @@ var routes = Routes{
 	Route{"GetCouponByDateAndID", "GET", "/coupon/{id}/{date}", GetCouponByDateAndID},
 	Route{"CreateCoupon", "POST", "/coupon", CreateCoupon},
 	Route{"UpdateCoupon", "PUT", "/coupon", UpdateCoupon},
-	Route{"DeleteCoupon", "DELETE", "/coupon", DeleteCoupon},
+	Route{"DeleteCouponByID", "DELETE", "/coupon/{id}", DeleteCouponByID},
 
 	// All menu Routes
 	Route{"GetAllMenu", "GET", "/menu", GetAllMenu},

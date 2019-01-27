@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"time"
 
 	. "github.com/ankit16-19/rasoi/dbConnection"
@@ -36,8 +35,6 @@ func (c *CouponDAO) FindByDateAndID(id string, date string) (Coupon, error) {
 	if err2 != nil {
 		return coupon, err2
 	}
-	fmt.Print("Searching for ")
-	fmt.Print(t)
 	err := Db.C(c.Collection).Find(bson.M{"userid": id, "weekstartdate": t}).One(&coupon)
 	return coupon, err
 }
@@ -57,9 +54,9 @@ func (c *CouponDAO) Insert(coupon Coupon) error {
 	return err
 }
 
-// Delete :
-func (c *CouponDAO) Delete(coupon Coupon) error {
-	err := Db.C(c.Collection).Remove(&coupon)
+// DeleteByID :
+func (c *CouponDAO) DeleteByID(id string) error {
+	err := Db.C(c.Collection).Remove(bson.M{"_id": bson.ObjectIdHex(id)})
 	return err
 }
 

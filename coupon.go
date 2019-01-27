@@ -96,15 +96,10 @@ func UpdateCoupon(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
-// DeleteCoupon :
-func DeleteCoupon(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	var coupon Coupon
-	if err := json.NewDecoder(r.Body).Decode(&coupon); err != nil {
-		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	if err := cdao.Delete(coupon); err != nil {
+// DeleteCouponByID :
+func DeleteCouponByID(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	if err := cdao.DeleteByID(params["id"]); err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
