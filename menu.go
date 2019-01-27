@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 	"time"
@@ -82,9 +83,10 @@ func UpdateMenuDateIfWeekChange() error {
 	}
 	// compare last sunday date with curretn date
 	if time.Now().After(menus[0].MessUP.Sun.Date) {
+		fmt.Print("inside if")
 		// set Date for every entry
 		days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
-		dates := WholeWeekDates(time.Now())
+		dates := WholeWeekDates(time.Now().AddDate(0, 0, 7))
 
 		for i := range days {
 			reflect.ValueOf(&menus[0].MessUP).Elem().FieldByName(days[i]).FieldByName("Date").Set(reflect.ValueOf(dates[i]))
@@ -94,6 +96,7 @@ func UpdateMenuDateIfWeekChange() error {
 			return err
 		}
 	}
+	fmt.Print("UpdateMenuDateIfWeekChange function runnin....... exiting")
 	return nil
 }
 

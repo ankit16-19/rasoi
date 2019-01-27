@@ -18,6 +18,8 @@ var cdao = CouponDAO{}
 
 // GetAllCoupon :
 func GetAllCoupon(w http.ResponseWriter, r *http.Request) {
+	// Move to authentication when feature added
+	UpdateMenuDateIfWeekChange()
 	coupon, err := cdao.FindAll()
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
