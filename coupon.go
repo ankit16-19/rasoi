@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -67,7 +66,7 @@ func CreateCoupon(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create ID for mongodb
 	coupon.ID = bson.NewObjectId()
-	coupon.Userid = strings.ToUpper(coupon.Userid)
+	//coupon.Userid = strings.ToUpper(coupon.Userid)
 	// Get next week first date
 	t, err := time.Parse("2006-01-02", GetDateFromTime(FirstDayofWeek(time.Now().AddDate(0, 0, 7))))
 	if err != nil {
@@ -92,7 +91,7 @@ func UpdateCoupon(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	coupon.Userid = strings.ToUpper(coupon.Userid)
+	//coupon.Userid = strings.ToUpper(coupon.Userid)
 	CalculateCouponPrice(&coupon)
 	if err := cdao.Update(coupon); err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
