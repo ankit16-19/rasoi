@@ -1,19 +1,11 @@
 package main
 
-import (
-	"reflect"
-	"strconv"
-	"time"
-
-	. "github.com/ankit16-19/rasoi/models"
-	"github.com/jung-kurt/gofpdf"
-)
-
 // // Coupon structure
 // type Coupon struct {
 // 	ID           bson.ObjectId `bson:"_id" json:"id"`
 // 	Userid       string        `bson:"userid" json:"userid"`
 // 	Gender       string        `bson:"gender" json:"gender"`
+// 	UserName     string        `bson:"username" json:"username"`
 // 	Amount1      int           `bson:"amount1" json:"amount1"`
 // 	Amount2      int           `bson:"amount2" json:"mount2"`
 // 	Total        int           `bson:"Total" json:"Total"`
@@ -46,197 +38,308 @@ import (
 // 	IsMessup   bool `bson:"ismessup" json:"isMessUp"`
 // }
 
-type studentCouponInfo struct {
-	UserID string
-	Gender string
-	Total  int
-}
+// type studentCouponInfo struct {
+// 	UserID string
+// 	Gender string
+// 	Total  int
+// 	Name   string
+// }
 
-type totalCouponCount struct {
-	Mon totalFoodForDay
-	Tue totalFoodForDay
-	Wed totalFoodForDay
-	Thr totalFoodForDay
-	Fri totalFoodForDay
-	Sat totalFoodForDay
-	Sun totalFoodForDay
-}
+// type totalCouponCount struct {
+// 	Mon totalFoodForDay
+// 	Tue totalFoodForDay
+// 	Wed totalFoodForDay
+// 	Thr totalFoodForDay
+// 	Fri totalFoodForDay
+// 	Sat totalFoodForDay
+// 	Sun totalFoodForDay
+// }
 
-type totalFoodForDay struct {
-	BVeg  int
-	BNVeg int
-	LVeg  int
-	LNVeg int
-	DVeg  int
-	DNVeg int
-}
+// type totalFoodForDay struct {
+// 	BVeg  int
+// 	BNVeg int
+// 	LVeg  int
+// 	LNVeg int
+// 	DVeg  int
+// 	DNVeg int
+// }
+
+// // DAO  :
+// type DAO struct{}
+
+// // Db :
+// var Db *mgo.Database
+
+// // Connect :
+// func (c *DAO) Connect() {
+// 	session, err := mgo.Dial("172.16.1.213")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	Db = session.DB("rasoi")
+// }
 
 // func main() {
+// 	var d = DAO{}
+// 	d.Connect()
 
 // 	pdf := gofpdf.New("P", "mm", "A4", "")
 // 	pdf.AddPage()
 // 	pdf.SetFont("Arial", "B", 10)
 
-// 	// c := [10]Coupon{}
-// 	// for i := 0; i < 10; i++ {
-// 	// 	if i%2 == 0 {
-// 	// 		PrintCouponToPDF(c[i], pdf, "Mess-1", true)
-// 	// 	} else {
-// 	// 		PrintCouponToPDF(c[i], pdf, "Mess-1", false)
-// 	// 	}
-// 	// }
+// 	// NOTE: studentcouponss
+// 	{
 
-// 	// studentinfo := [10]studentCouponInfo{}
-// 	// for i, si := range studentinfo {
-// 	// 	PrintStudentCouponInfoToPdf(i, si, pdf, "Mess-1")
-// 	// }
+// 		orQuery := []bson.M{}
+// 		days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
+// 		times := []string{"breakfast", "lunch", "dinner"}
+// 		isMessUP := false
+// 		for _, day := range days {
+// 			for _, t := range times {
+// 				andQuery := []bson.M{}
+// 				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
+// 				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
 
-// 	err := pdf.OutputFileAndClose("hello.pdf")
+// 				orQuery = append(orQuery, bson.M{"$and": andQuery})
+// 			}
+// 		}
+// 		var coupons []Coupon
+// 		err2 := Db.C("coupons").Find(bson.M{"$or": orQuery}).All(&coupons)
+// 		if err2 != nil {
+// 			fmt.Print("Error in getting coupons ", err2)
+// 		}
+
+// 		for i := 0; i < len(coupons); i++ {
+// 			if i%2 == 0 {
+// 				PrintCouponToPDF(coupons[i], pdf, "Mess-Down", true, false)
+// 			} else {
+// 				PrintCouponToPDF(coupons[i], pdf, "Mess-Down", false, false)
+// 			}
+// 		}
+
+// 	}
+
+// 	// NOTE: StudentCouponInfo
+// 	{
+// 		// var coupons []Coupon
+// 		// orQuery := []bson.M{}
+// 		// days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
+// 		// times := []string{"breakfast", "lunch", "dinner"}
+// 		// isMessUP := false
+// 		// for _, day := range days {
+// 		// 	for _, t := range times {
+// 		// 		andQuery := []bson.M{}
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+
+// 		// 		orQuery = append(orQuery, bson.M{"$and": andQuery})
+// 		// 	}
+// 		// }
+// 		// err2 := Db.C("coupons").Find(bson.M{"$or": orQuery}).All(&coupons)
+// 		// if err2 != nil {
+// 		// 	fmt.Print("Error in getting coupons ", err2)
+// 		// }
+// 		// for i := 0; i < len(coupons); i++ {
+// 		// 	var sci studentCouponInfo
+// 		// 	sci.UserID = coupons[i].Userid
+// 		// 	sci.Gender = coupons[i].Gender
+// 		// 	sci.Name = coupons[i].UserName
+// 		// 	if isMessUP {
+// 		// 		sci.Total = coupons[i].Amount1
+// 		// 	} else {
+// 		// 		sci.Total = coupons[i].Amount2
+// 		// 	}
+// 		// 	PrintStudentCouponInfoToPdf(i, sci, pdf, "Mess-Down")
+// 		// }
+// 	}
+
+// 	// NOTE: day wise
+// 	{
+// 		// var tcc totalCouponCount
+// 		// daysCapital := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
+// 		// foodForDay := []string{"BVeg", "BNVeg", "LVeg", "LNVeg", "DVeg", "DNVeg"}
+// 		// days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
+// 		// times := []string{"breakfast", "lunch", "dinner"}
+// 		// ismessup := false
+// 		// for i, day := range days {
+// 		// 	for j, t := range times {
+// 		// 		andQuery := []bson.M{}
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isVeg": true})
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": ismessup})
+
+// 		// 		countVeg, err := Db.C("coupons").Find(bson.M{"$and": andQuery}).Count()
+// 		// 		if err != nil {
+// 		// 			fmt.Print("Got error in getting coupon count")
+// 		// 		}
+// 		// 		reflect.ValueOf(&tcc).Elem().FieldByName(daysCapital[i]).FieldByName(foodForDay[j*2]).SetInt(int64(countVeg))
+// 		// 		andQuery = andQuery[:0]
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isVeg": false})
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+// 		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": ismessup})
+
+// 		// 		countNVeg, err2 := Db.C("coupons").Find(bson.M{"$and": andQuery}).Count()
+// 		// 		if err2 != nil {
+// 		// 			fmt.Print("Got error in getting coupon count")
+// 		// 		}
+// 		// 		reflect.ValueOf(&tcc).Elem().FieldByName(daysCapital[i]).FieldByName(foodForDay[j*2+1]).SetInt(int64(countNVeg))
+
+// 		// 	}
+// 		// }
+// 		// PrintTotalCountToPDF(&tcc, pdf, "Mess-Down")
+// 	}
+
+// 	err := pdf.OutputFileAndClose("studentCouponsMessDown.pdf")
 // 	if err != nil {
 // 		fmt.Print("err", err)
 // 	}
 // }
 
-// PrintStudentCouponInfoToPdf :
-func PrintStudentCouponInfoToPdf(srl int, s studentCouponInfo, p *gofpdf.Fpdf, mess string) {
-	var l, h float64
-	l = 39
-	h = 10
-	if srl == 0 {
-		headers := []string{"Sr. No", "Student Id", "Gender", "Total", "Signature"}
-		for _, header := range headers {
-			printCell(p, l, h, header)
-		}
-		p.Ln(-1)
-	}
+// // PrintStudentCouponInfoToPdf :
+// func PrintStudentCouponInfoToPdf(srl int, s studentCouponInfo, p *gofpdf.Fpdf, mess string) {
+// 	var l, h float64
+// 	l = 39
+// 	h = 10
 
-	stotal := strconv.Itoa(s.Total)
-	sinfo := []string{s.UserID, s.Gender, stotal, ""}
-	printCell(p, l, h, strconv.Itoa(srl))
-	for _, si := range sinfo {
-		printCell(p, l, h, si)
-	}
-	p.Ln(-1)
+// 	if srl == 0 {
+// 		printCell(p, l, h, mess)
+// 		p.Ln(-1)
+// 		headers := []string{"Sr. No", "Student Id", "Name", "Gender", "Total"}
+// 		for _, header := range headers {
+// 			printCell(p, l, h, header)
+// 		}
+// 		p.Ln(-1)
+// 	}
 
-}
+// 	stotal := strconv.Itoa(s.Total)
+// 	sinfo := []string{s.UserID, s.Name, s.Gender, stotal, ""}
+// 	printCell(p, l, h, strconv.Itoa(srl+1))
+// 	for _, si := range sinfo {
+// 		printCell(p, l, h, si)
+// 	}
+// 	p.Ln(-1)
 
-// PrintTotalCountToPDF :
-func PrintTotalCountToPDF(t totalCouponCount, p *gofpdf.Fpdf, mess string) {
-	var l, h float64
-	l = 25
-	h = 10
-	p.CellFormat(0, h, mess, "0", 1, "M", false, 0, "")
-	headers := []string{"Date", "B.Fast Veg", "B.Fast NVeg", "Lunch Veg", "Lunch NVeg", "Dinner Veg", "Dinner NVeg"}
-	for _, header := range headers {
-		printCell(p, l, h, header)
-	}
-	p.Ln(-1)
+// }
 
-	dates := WholeWeekDates(time.Now())
+// // PrintTotalCountToPDF :
+// func PrintTotalCountToPDF(t *totalCouponCount, p *gofpdf.Fpdf, mess string) {
+// 	var l, h float64
+// 	l = 25
+// 	h = 10
+// 	p.CellFormat(0, h, mess, "0", 1, "M", false, 0, "")
+// 	headers := []string{"Date", "B.Fast Veg", "B.Fast NVeg", "Lunch Veg", "Lunch NVeg", "Dinner Veg", "Dinner NVeg"}
+// 	for _, header := range headers {
+// 		printCell(p, l, h, header)
+// 	}
+// 	p.Ln(-1)
 
-	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
-	fields := []string{"BVeg", "BNVeg", "LVeg", "LNVeg", "DVeg", "DNVeg"}
-	for i, day := range days {
-		printCell(p, l, h, GetDateFromTime(dates[i]))
-		for _, field := range fields {
-			count := reflect.ValueOf(t).FieldByName(day).FieldByName(field).Int()
-			// int64 to int
-			printCell(p, l, h, strconv.Itoa(int(count)))
-		}
-		p.Ln(-1)
-	}
-}
+// 	dates := WholeWeekDates(time.Now())
 
-// PrintCouponToPDF :
-func PrintCouponToPDF(c Coupon, p *gofpdf.Fpdf, mess string, isCouponLeft bool) {
+// 	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
+// 	fields := []string{"BVeg", "BNVeg", "LVeg", "LNVeg", "DVeg", "DNVeg"}
+// 	for i, day := range days {
+// 		printCell(p, l, h, GetDateFromTime(dates[i]))
+// 		for _, field := range fields {
+// 			count := reflect.ValueOf(t).Elem().FieldByName(day).FieldByName(field).Int()
+// 			// int64 to int
+// 			printCell(p, l, h, strconv.Itoa(int(count)))
+// 		}
+// 		p.Ln(-1)
+// 	}
+// }
 
-	var l1, l2, h1, shift float64
-	l1 = 24
-	l2 = 48
-	h1 = 6
-	shift = 107
+// // PrintCouponToPDF :
+// func PrintCouponToPDF(c Coupon, p *gofpdf.Fpdf, mess string, isCouponLeft bool, ismessup bool) {
 
-	if !isCouponLeft {
-		p.CellFormat(1, h1, " ", "LR", 0, "M", false, 0, "")
-		p.SetXY(p.GetX(), p.GetY()-54)
-	}
-	// Header1
-	header1 := []string{mess, c.Userid}
-	for _, h := range header1 {
-		printCell(p, l2, h1, h)
-	}
-	p.Ln(-1)
-	if !isCouponLeft {
-		p.SetX(shift)
-	}
+// 	var l1, l2, h1, shift float64
+// 	l1 = 24
+// 	l2 = 48
+// 	h1 = 6
+// 	shift = 107
 
-	// Header2
-	header2 := []string{"Date", "B.Fast", "Lunch", "Dinner"}
-	for _, h := range header2 {
-		printCell(p, l1, h1, h)
-	}
-	p.Ln(-1)
-	if !isCouponLeft {
-		p.SetX(shift)
-	}
+// 	if !isCouponLeft {
+// 		p.CellFormat(1, h1, " ", "LR", 0, "M", false, 0, "")
+// 		p.SetXY(p.GetX(), p.GetY()-54)
+// 	}
+// 	// Header1
 
-	// Body
-	dates := WholeWeekDates(time.Now())
-	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
-	times := []string{"Breakfast", "Lunch", "Dinner"}
+// 	header1 := []string{mess, c.Userid}
 
-	for i, day := range days {
-		printCell(p, l1, h1, GetDateFromTime(dates[i]))
-		for _, time := range times {
+// 	for _, h := range header1 {
+// 		printCell(p, l2, h1, h)
+// 	}
+// 	p.Ln(-1)
+// 	if !isCouponLeft {
+// 		p.SetX(shift)
+// 	}
 
-			booked := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsSelected").Bool()
-			isVeg := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsVeg").Bool()
+// 	// Header2
+// 	header2 := []string{"Date", "B.Fast", "Lunch", "Dinner"}
+// 	for _, h := range header2 {
+// 		printCell(p, l1, h1, h)
+// 	}
+// 	p.Ln(-1)
+// 	if !isCouponLeft {
+// 		p.SetX(shift)
+// 	}
 
-			if booked {
-				if isVeg {
-					printCell(p, l1, h1, "VEG")
-				} else {
-					printCell(p, l1, h1, "NVEG")
-				}
-			} else {
-				printCell(p, l1, h1, "***")
-			}
+// 	// Body
+// 	dates := WholeWeekDates(time.Now().AddDate(0, 0, 7))
+// 	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
+// 	times := []string{"Breakfast", "Lunch", "Dinner"}
 
-		}
-		p.Ln(-1)
-		if !isCouponLeft {
-			p.SetX(shift)
-		}
-	}
+// 	for i, day := range days {
+// 		printCell(p, l1, h1, GetDateFromTime(dates[i]))
+// 		for _, time := range times {
+// 			ismessup2 := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsMessup").Bool()
+// 			booked := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsSelected").Bool()
+// 			isVeg := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsVeg").Bool()
 
-	// Footer
-	var footer [2]string
-	amt := "Amount to be paid. RS "
-	if mess == "Mess-1" {
-		footer[0] = amt + strconv.Itoa(c.Amount1)
-	} else {
-		footer[0] = amt + strconv.Itoa(c.Amount2)
-	}
-	footer[1] = c.Gender
-	for _, f := range footer {
-		printCell(p, l2, h1, f)
-	}
-	if !isCouponLeft {
-		p.Ln(-1)
-		p.Ln(-1)
-	}
+// 			if booked && !ismessup2 {
+// 				if isVeg {
+// 					printCell(p, l1, h1, "VEG")
+// 				} else {
+// 					printCell(p, l1, h1, "NVEG")
+// 				}
+// 			} else {
+// 				printCell(p, l1, h1, "***")
+// 			}
 
-}
+// 		}
+// 		p.Ln(-1)
+// 		if !isCouponLeft {
+// 			p.SetX(shift)
+// 		}
+// 	}
 
-func printCell(p *gofpdf.Fpdf, l float64, h float64, txt string) {
-	fullBorder := "1"
-	middleAlign := "M"
-	emptyLink := ""
-	contSameLine := 0
-	noColor := false
-	noLink := 0
-	p.CellFormat(l, h, txt, fullBorder, contSameLine, middleAlign, noColor, noLink, emptyLink)
-}
+// 	// Footer
+// 	var footer [2]string
+// 	amt := "Amount to be paid. RS "
+// 	if ismessup {
+// 		footer[0] = amt + strconv.Itoa(c.Amount1)
+// 	} else {
+// 		footer[0] = amt + strconv.Itoa(c.Amount2)
+// 	}
+// 	footer[1] = c.Gender
+// 	for _, f := range footer {
+// 		printCell(p, l2, h1, f)
+// 	}
+// 	if !isCouponLeft {
+// 		p.Ln(-1)
+// 		p.Ln(-1)
+// 	}
+
+// }
+
+// func printCell(p *gofpdf.Fpdf, l float64, h float64, txt string) {
+// 	fullBorder := "1"
+// 	middleAlign := "M"
+// 	emptyLink := ""
+// 	contSameLine := 0
+// 	noColor := false
+// 	noLink := 0
+// 	p.CellFormat(l, h, txt, fullBorder, contSameLine, middleAlign, noColor, noLink, emptyLink)
+// }
 
 // // GetDateFromTime :
 // func GetDateFromTime(t time.Time) string {

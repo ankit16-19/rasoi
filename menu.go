@@ -82,7 +82,7 @@ func UpdateMenuDateIfWeekChange() error {
 		return err
 	}
 	// compare last sunday date with curretn date
-	if time.Now().After(menus[0].MessUP.Sun.Date) {
+	if time.Now().AddDate(0, 0, 7).After(menus[0].MessUP.Sun.Date) {
 		fmt.Print("inside if")
 		// set Date for every entry
 		days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
