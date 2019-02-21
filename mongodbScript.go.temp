@@ -1,0 +1,31 @@
+package main
+
+import (
+	"log"
+
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+)
+
+// DAO  :
+type DAO struct{}
+
+// Db :
+var Db *mgo.Database
+
+// Connect :
+func (c *DAO) Connect() {
+	session, err := mgo.Dial("172.16.1.213")
+	if err != nil {
+		log.Fatal(err)
+	}
+	Db = session.DB("rasoi")
+}
+
+func main() {
+	var d = DAO{}
+	d.Connect()
+
+	err := Db.C("coupons").Find(bson.M{})
+
+}
