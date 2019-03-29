@@ -102,133 +102,168 @@ func main() {
 	// NOTE: studentcouponss
 	{
 
-		// orQuery := []bson.M{}
-		// days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
-		// times := []string{"breakfast", "lunch", "dinner"}
-		// isMessUP := false
-		// dd, _ := time.Parse("2006-01-02", "2019-02-17")
-		// for _, day := range days {
-		// 	for _, t := range times {
-		// 		andQuery := []bson.M{}
-		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
-		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+		orQuery := []bson.M{}
+		days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
+		times := []string{"breakfast", "lunch", "dinner"}
+		isMessUP := false
+		dd, _ := time.Parse("2006-01-02", "2019-03-31")
+		for _, day := range days {
+			for _, t := range times {
+				andQuery := []bson.M{}
+				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
+				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
 
-		// 		orQuery = append(orQuery, bson.M{"$and": andQuery})
-		// 	}
-		// }
-		// var coupons []Coupon
+				orQuery = append(orQuery, bson.M{"$and": andQuery})
+			}
+		}
+		var coupons []Coupon
 
-		// err2 := Db.C("coupons").Find(bson.M{"$query": bson.M{"weekstartdate": bson.M{"$gte": dd}, "$or": orQuery}, "$orderby": bson.M{"gender": 1, "userid": 1}}).All(&coupons)
-		// if err2 != nil {
-		// 	fmt.Print("Error in getting coupons ", err2)
-		// }
-		// var messname string
-		// if isMessUP {
-		// 	messname = "Mess-Up"
-		// 	filename = "studentCouponsMessUp.pdf"
-		// } else {
-		// 	messname = "Mess-Down"
-		// 	filename = "studentCouponsMessDown.pdf"
-		// }
-		// for i := 0; i < len(coupons); i++ {
-		// 	if i%2 == 0 {
-		// 		PrintCouponToPDF(coupons[i], pdf, messname, true, isMessUP)
-		// 	} else {
-		// 		PrintCouponToPDF(coupons[i], pdf, messname, false, isMessUP)
-		// 	}
-		// }
+		err2 := Db.C("coupons").Find(bson.M{"$query": bson.M{"weekstartdate": bson.M{"$gte": dd}, "$or": orQuery}, "$orderby": bson.M{"userid": 1}}).All(&coupons)
+		if err2 != nil {
+			fmt.Print("Error in getting coupons ", err2)
+		}
+		var messname string
+		if isMessUP {
+			messname = "Mess-Up"
+			filename = "studentCouponsMessUp.pdf"
+		} else {
+			messname = "Mess-Down"
+			filename = "studentCouponsMessDown.pdf"
+		}
+		for i := 0; i < len(coupons); i++ {
+			if i%2 == 0 {
+				PrintCouponToPDF(coupons[i], pdf, messname, true, isMessUP)
+			} else {
+				PrintCouponToPDF(coupons[i], pdf, messname, false, isMessUP)
+			}
+		}
 
+	}
+
+	err := pdf.OutputFileAndClose(filename)
+	if err != nil {
+		fmt.Print("err", err)
 	}
 
 	// NOTE: StudentCouponInfo
 	{
-		// var coupons []Coupon
-		// orQuery := []bson.M{}
-		// days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
-		// times := []string{"breakfast", "lunch", "dinner"}
-		// isMessUP := false
-		// dd, _ := time.Parse("2006-01-02", "2019-02-17")
-		// for _, day := range days {
-		// 	for _, t := range times {
-		// 		andQuery := []bson.M{}
-		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
-		// 		andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
-
-		// 		orQuery = append(orQuery, bson.M{"$and": andQuery})
-		// 	}
-		// }
-
-		// err2 := Db.C("coupons").Find(bson.M{"$query": bson.M{"weekstartdate": bson.M{"$gte": dd}, "$or": orQuery}, "$orderby": bson.M{"gender": 1, "userid": 1}}).All(&coupons)
-		// if err2 != nil {
-		// 	fmt.Print("Error in getting coupons ", err2)
-		// }
-		// var messname string
-		// if isMessUP {
-		// 	messname = "Mess-Up"
-		// 	filename = "studentCouponInfoMessUp.pdf"
-		// } else {
-		// 	messname = "Mess-Down"
-		// 	filename = "studentCouponInfoMessDown.pdf"
-		// }
-		// for i := 0; i < len(coupons); i++ {
-		// 	var sci studentCouponInfo
-		// 	sci.UserID = coupons[i].Userid
-		// 	sci.Gender = coupons[i].Gender
-		// 	sci.Name = coupons[i].UserName
-		// 	if isMessUP {
-		// 		sci.Total = coupons[i].Amount1
-		// 	} else {
-		// 		sci.Total = coupons[i].Amount2
-		// 	}
-		// 	PrintStudentCouponInfoToPdf(i, sci, pdf, messname)
-		// }
+		StudentCouponInfoToPdfFunc(true)
+		StudentCouponInfoToPdfFunc(false)
 	}
 
-	// 	// NOTE: day wise
+	// NOTE: Day wise
 	{
-		var tcc totalCouponCount
-		daysCapital := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
-		foodForDay := []string{"BVeg", "BNVeg", "LVeg", "LNVeg", "DVeg", "DNVeg"}
+		PrintTotalCountToPDFFUNC(true)
+		PrintTotalCountToPDFFUNC(false)
+	}
+
+}
+
+// PrintTotalCountToPDFFUNC :
+func PrintTotalCountToPDFFUNC(mess bool) {
+
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+	pdf.SetFont("Arial", "B", 10)
+	var filename string
+
+	var tcc totalCouponCount
+	daysCapital := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
+	foodForDay := []string{"BVeg", "BNVeg", "LVeg", "LNVeg", "DVeg", "DNVeg"}
+	days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
+	times := []string{"breakfast", "lunch", "dinner"}
+	ismessup := mess
+	dd, _ := time.Parse("2006-01-02", "2019-03-31")
+	var messname string
+	if ismessup {
+		messname = "Mess-Up"
+		filename = "studentCouponTotalMessUp.pdf"
+	} else {
+		messname = "Mess-Down"
+		filename = "studentCouponTotalMessDown.pdf"
+	}
+	for i, day := range days {
+		for j, t := range times {
+			andQuery := []bson.M{}
+			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isVeg": true})
+			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": ismessup})
+
+			countVeg, err := Db.C("coupons").Find(bson.M{"weekstartdate": bson.M{"$gte": dd}, "$and": andQuery}).Count()
+			if err != nil {
+				fmt.Print("Got error in getting coupon count")
+			}
+			reflect.ValueOf(&tcc).Elem().FieldByName(daysCapital[i]).FieldByName(foodForDay[j*2]).SetInt(int64(countVeg))
+			andQuery = andQuery[:0]
+			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isVeg": false})
+			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": ismessup})
+
+			countNVeg, err2 := Db.C("coupons").Find(bson.M{"weekstartdate": bson.M{"$gte": dd}, "$and": andQuery}).Count()
+			if err2 != nil {
+				fmt.Print("Got error in getting coupon count")
+			}
+			reflect.ValueOf(&tcc).Elem().FieldByName(daysCapital[i]).FieldByName(foodForDay[j*2+1]).SetInt(int64(countNVeg))
+
+		}
+	}
+	PrintTotalCountToPDF(&tcc, pdf, messname)
+
+	err := pdf.OutputFileAndClose(filename)
+	if err != nil {
+		fmt.Print("err", err)
+	}
+}
+
+// StudentCouponInfoToPdfFunc :
+func StudentCouponInfoToPdfFunc(mess bool) {
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+	pdf.SetFont("Arial", "B", 10)
+	var filename string
+
+	{
+		var coupons []Coupon
+		orQuery := []bson.M{}
 		days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
 		times := []string{"breakfast", "lunch", "dinner"}
-		ismessup := false
-		dd, _ := time.Parse("2006-01-02", "2019-02-17")
-		var messname string
-		if ismessup {
-			messname = "Mess-Up"
-			filename = "studentCouponTotalMessUp.pdf"
-		} else {
-			messname = "Mess-Down"
-			filename = "studentCouponTotalMessDown.pdf"
-		}
-		for i, day := range days {
-			for j, t := range times {
+		isMessUP := mess
+		dd, _ := time.Parse("2006-01-02", "2019-03-31")
+		for _, day := range days {
+			for _, t := range times {
 				andQuery := []bson.M{}
-				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isVeg": true})
+				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
 				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
-				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": ismessup})
 
-				countVeg, err := Db.C("coupons").Find(bson.M{"weekstartdate": bson.M{"$gte": dd}, "$and": andQuery}).Count()
-				if err != nil {
-					fmt.Print("Got error in getting coupon count")
-				}
-				reflect.ValueOf(&tcc).Elem().FieldByName(daysCapital[i]).FieldByName(foodForDay[j*2]).SetInt(int64(countVeg))
-				andQuery = andQuery[:0]
-				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isVeg": false})
-				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
-				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": ismessup})
-
-				countNVeg, err2 := Db.C("coupons").Find(bson.M{"weekstartdate": bson.M{"$gte": dd}, "$and": andQuery}).Count()
-				if err2 != nil {
-					fmt.Print("Got error in getting coupon count")
-				}
-				reflect.ValueOf(&tcc).Elem().FieldByName(daysCapital[i]).FieldByName(foodForDay[j*2+1]).SetInt(int64(countNVeg))
-
+				orQuery = append(orQuery, bson.M{"$and": andQuery})
 			}
 		}
-		PrintTotalCountToPDF(&tcc, pdf, messname)
-	}
 
+		err2 := Db.C("coupons").Find(bson.M{"$query": bson.M{"weekstartdate": bson.M{"$gte": dd}, "$or": orQuery}, "$orderby": bson.M{"gender": 1, "userid": 1}}).All(&coupons)
+		if err2 != nil {
+			fmt.Print("Error in getting coupons ", err2)
+		}
+		var messname string
+		if isMessUP {
+			messname = "Mess-Up"
+			filename = "studentCouponInfoMessUp.pdf"
+		} else {
+			messname = "Mess-Down"
+			filename = "studentCouponInfoMessDown.pdf"
+		}
+		for i := 0; i < len(coupons); i++ {
+			var sci studentCouponInfo
+			sci.UserID = coupons[i].Userid
+			sci.Gender = coupons[i].Gender
+			sci.Name = coupons[i].UserName
+			if isMessUP {
+				sci.Total = coupons[i].Amount1
+			} else {
+				sci.Total = coupons[i].Amount2
+			}
+			PrintStudentCouponInfoToPdf(i, sci, pdf, messname)
+		}
+	}
 	err := pdf.OutputFileAndClose(filename)
 	if err != nil {
 		fmt.Print("err", err)
@@ -327,15 +362,20 @@ func PrintCouponToPDF(c Coupon, p *gofpdf.Fpdf, mess string, isCouponLeft bool, 
 	dates := WholeWeekDates(time.Now().AddDate(0, 0, 7))
 	days := []string{"Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"}
 	times := []string{"Breakfast", "Lunch", "Dinner"}
-
+	var ismessup2 bool
 	for i, day := range days {
 		printCell(p, l1, h1, GetDateFromTime(dates[i]))
 		for _, time := range times {
-			ismessup2 := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsMessup").Bool()
+			if ismessup {
+				ismessup2 = reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsMessup").Bool()
+			} else {
+				ismessup2 = !reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsMessup").Bool()
+			}
+
 			booked := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsSelected").Bool()
 			isVeg := reflect.ValueOf(c.Coupon).FieldByName(day).FieldByName(time).FieldByName("IsVeg").Bool()
 
-			if booked && !ismessup2 {
+			if booked && ismessup2 {
 				if isVeg {
 					printCell(p, l1, h1, "VEG")
 				} else {
