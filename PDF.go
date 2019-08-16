@@ -106,7 +106,7 @@ func main() {
 		days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
 		times := []string{"breakfast", "lunch", "dinner"}
 		isMessUP := false
-		dd, _ := time.Parse("2006-01-02", "2019-03-31")
+		dd, _ := time.Parse("2006-01-02", "2019-08-18")
 		for _, day := range days {
 			for _, t := range times {
 				andQuery := []bson.M{}
@@ -173,7 +173,7 @@ func PrintTotalCountToPDFFUNC(mess bool) {
 	days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
 	times := []string{"breakfast", "lunch", "dinner"}
 	ismessup := mess
-	dd, _ := time.Parse("2006-01-02", "2019-03-31")
+	dd, _ := time.Parse("2006-01-02", "2019-08-18")
 	var messname string
 	if ismessup {
 		messname = "Mess-Up"
@@ -228,7 +228,7 @@ func StudentCouponInfoToPdfFunc(mess bool) {
 		days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
 		times := []string{"breakfast", "lunch", "dinner"}
 		isMessUP := mess
-		dd, _ := time.Parse("2006-01-02", "2019-03-31")
+		dd, _ := time.Parse("2006-01-02", "2019-08-18")
 		for _, day := range days {
 			for _, t := range times {
 				andQuery := []bson.M{}
