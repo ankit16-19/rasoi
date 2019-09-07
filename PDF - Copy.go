@@ -95,69 +95,49 @@ func main() {
 	var d = DAO{}
 	d.Connect()
 
-	date := "2019-09-08"
-
-	// NOTE: studentcouponss
-	{
-		StudentCoupons(true, date)
-		StudentCoupons(false, date)
-	}
-
-	// NOTE: StudentCouponInfo
-	{
-		StudentCouponInfoToPdfFunc(true, date)
-		StudentCouponInfoToPdfFunc(false, date)
-	}
-
-	// NOTE: Day wise
-	{
-		PrintTotalCountToPDFFUNC(true, date)
-		PrintTotalCountToPDFFUNC(false, date)
-	}
-
-}
-
-// StudentCoupons :
-func StudentCoupons(mess bool, date string) {
-
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
 	pdf.SetFont("Arial", "B", 10)
 	var filename string
-	orQuery := []bson.M{}
-	days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
-	times := []string{"breakfast", "lunch", "dinner"}
-	isMessUP := mess
-	dd, _ := time.Parse("2006-01-02", date)
-	for _, day := range days {
-		for _, t := range times {
-			andQuery := []bson.M{}
-			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
-			andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+	// NOTE: studentcouponss
+	{
 
-			orQuery = append(orQuery, bson.M{"$and": andQuery})
+		orQuery := []bson.M{}
+		days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
+		times := []string{"breakfast", "lunch", "dinner"}
+		isMessUP := true
+		dd, _ := time.Parse("2006-01-02", "2019-08-25")
+		for _, day := range days {
+			for _, t := range times {
+				andQuery := []bson.M{}
+				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "ismessup": isMessUP})
+				andQuery = append(andQuery, bson.M{"coupon" + "." + day + "." + t + "." + "isSelected": true})
+
+				orQuery = append(orQuery, bson.M{"$and": andQuery})
+			}
 		}
-	}
-	var coupons []Coupon
+		var coupons []Coupon
 
-	err2 := Db.C("coupons").Find(bson.M{"$query": bson.M{"weekstartdate": bson.M{"$gte": dd}, "$or": orQuery}, "$orderby": bson.M{"userid": 1}}).All(&coupons)
-	if err2 != nil {
-		fmt.Print("Error in getting coupons ", err2)
-	}
-	var messname string
-	if isMessUP {
-		messname = "Mess-Up"
-		filename = "studentCouponsMessUp.pdf"
-	} else {
-		messname = "Mess-Down"
-		filename = "studentCouponsMessDown.pdf"
-	}
-	for i := 0; i < len(coupons); i++ {
-		if i%2 == 0 {
-			PrintCouponToPDF(coupons[i], pdf, messname, true, isMessUP)
+		err2 := Db.C("coupons").Find(bson.M{"$query": bson.M{"weekstartdate": bson.M{"$gte": dd}, "$or": orQuery}, "$orderby": bson.M{"userid": 1}}).All(&coupons)
+		if err2 != nil {
+			fmt.Print("Error in getting coupons ", err2)
+		}
+		var messname string
+		if isMessUP {
+			messname = "Mess-Up"
+			filename = "studentCouponsMessUp.pdf"
 		} else {
-			PrintCouponToPDF(coupons[i], pdf, messname, false, isMessUP)
+			messname = "Mess-Down"
+			filename = "studentCouponsMessDown.pdf"
 		}
+		for i := 0; i < len(coupons); i++ {
+			if i%2 == 0 {
+				PrintCouponToPDF(coupons[i], pdf, messname, true, isMessUP)
+			} else {
+				PrintCouponToPDF(coupons[i], pdf, messname, false, isMessUP)
+			}
+		}
+
 	}
 
 	err := pdf.OutputFileAndClose(filename)
@@ -165,10 +145,22 @@ func StudentCoupons(mess bool, date string) {
 		fmt.Print("err", err)
 	}
 
+	// NOTE: StudentCouponInfo
+	{
+		StudentCouponInfoToPdfFunc(true)
+		StudentCouponInfoToPdfFunc(false)
+	}
+
+	// NOTE: Day wise
+	{
+		PrintTotalCountToPDFFUNC(true)
+		PrintTotalCountToPDFFUNC(false)
+	}
+
 }
 
 // PrintTotalCountToPDFFUNC :
-func PrintTotalCountToPDFFUNC(mess bool, date string) {
+func PrintTotalCountToPDFFUNC(mess bool) {
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
@@ -181,7 +173,7 @@ func PrintTotalCountToPDFFUNC(mess bool, date string) {
 	days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
 	times := []string{"breakfast", "lunch", "dinner"}
 	ismessup := mess
-	dd, _ := time.Parse("2006-01-02", date)
+	dd, _ := time.Parse("2006-01-02", "2019-08-25")
 	var messname string
 	if ismessup {
 		messname = "Mess-Up"
@@ -224,7 +216,7 @@ func PrintTotalCountToPDFFUNC(mess bool, date string) {
 }
 
 // StudentCouponInfoToPdfFunc :
-func StudentCouponInfoToPdfFunc(mess bool, date string) {
+func StudentCouponInfoToPdfFunc(mess bool) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
 	pdf.SetFont("Arial", "B", 10)
@@ -236,7 +228,7 @@ func StudentCouponInfoToPdfFunc(mess bool, date string) {
 		days := []string{"mon", "tue", "wed", "thr", "fri", "sat", "sun"}
 		times := []string{"breakfast", "lunch", "dinner"}
 		isMessUP := mess
-		dd, _ := time.Parse("2006-01-02", date)
+		dd, _ := time.Parse("2006-01-02", "2019-08-25")
 		for _, day := range days {
 			for _, t := range times {
 				andQuery := []bson.M{}
