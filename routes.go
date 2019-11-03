@@ -36,4 +36,8 @@ var routes = Routes{
 	Route{"GetAllMenu", "GET", "/menu", GetAllMenu},
 	Route{"CreateMenu", "POST", "/menu", CreateMenu},
 	Route{"UpdateMenu", "PUT", "/menu", UpdateMenu},
+
+	//Download Coupon
+	Route{"DownloadCoupon", "GET", "/download/{date}", DownloadCoupon},
+
 }

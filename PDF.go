@@ -2,53 +2,58 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"archive/zip"
+	"net/http"
 	"reflect"
 	"strconv"
+	"os"
+	"io"
 	"time"
-
+	"strings"
 	"github.com/jung-kurt/gofpdf"
-	mgo "gopkg.in/mgo.v2"
+	. "github.com/ankit16-19/rasoi/models"
+	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
+	. "github.com/ankit16-19/rasoi/dbConnection"
 )
 
 // Coupon structure
-type Coupon struct {
-	ID           bson.ObjectId `bson:"_id" json:"id"`
-	Userid       string        `bson:"userid" json:"userid"`
-	Gender       string        `bson:"gender" json:"gender"`
-	UserName     string        `bson:"username" json:"username"`
-	Amount1      int           `bson:"amount1" json:"amount1"`
-	Amount2      int           `bson:"amount2" json:"mount2"`
-	Total        int           `bson:"Total" json:"Total"`
-	WeekStartDay time.Time     `bson:"weekstartdate" json:"weekstartdate"`
-	Coupon       CouponForWeek `bson:"coupon" json:"coupon"`
-}
+// type Coupon struct {
+// 	ID           bson.ObjectId `bson:"_id" json:"id"`
+// 	Userid       string        `bson:"userid" json:"userid"`
+// 	Gender       string        `bson:"gender" json:"gender"`
+// 	UserName     string        `bson:"username" json:"username"`
+// 	Amount1      int           `bson:"amount1" json:"amount1"`
+// 	Amount2      int           `bson:"amount2" json:"mount2"`
+// 	Total        int           `bson:"Total" json:"Total"`
+// 	WeekStartDay time.Time     `bson:"weekstartdate" json:"weekstartdate"`
+// 	Coupon       CouponForWeek `bson:"coupon" json:"coupon"`
+// }
 
-// CouponForWeek : Coupon structure for whole week
-type CouponForWeek struct {
-	Mon CouponForDay `bson:"mon" json:"mon"`
-	Tue CouponForDay `bson:"tue" json:"tue"`
-	Wed CouponForDay `bson:"wed" json:"wed"`
-	Thr CouponForDay `bson:"thr" json:"thr"`
-	Fri CouponForDay `bson:"fri" json:"fri"`
-	Sat CouponForDay `bson:"sat" json:"sat"`
-	Sun CouponForDay `bson:"sun" json:"sun"`
-}
+// // CouponForWeek : Coupon structure for whole week
+// type CouponForWeek struct {
+// 	Mon CouponForDay `bson:"mon" json:"mon"`
+// 	Tue CouponForDay `bson:"tue" json:"tue"`
+// 	Wed CouponForDay `bson:"wed" json:"wed"`
+// 	Thr CouponForDay `bson:"thr" json:"thr"`
+// 	Fri CouponForDay `bson:"fri" json:"fri"`
+// 	Sat CouponForDay `bson:"sat" json:"sat"`
+// 	Sun CouponForDay `bson:"sun" json:"sun"`
+// }
 
-// CouponForDay : Coupon structure for a day
-type CouponForDay struct {
-	Breakfast FoodType `bson:"breakfast" json:"breakfast"`
-	Lunch     FoodType `bson:"lunch" json:"lunch"`
-	Dinner    FoodType `bson:"dinner" json:"dinner"`
-}
+// // CouponForDay : Coupon structure for a day
+// type CouponForDay struct {
+// 	Breakfast FoodType `bson:"breakfast" json:"breakfast"`
+// 	Lunch     FoodType `bson:"lunch" json:"lunch"`
+// 	Dinner    FoodType `bson:"dinner" json:"dinner"`
+// }
 
-// FoodType : FoodStructure for a time
-type FoodType struct {
-	IsSelected bool `bson:"isSelected" json:"isSelected"`
-	IsVeg      bool `bson:"isVeg" json:"isVeg"`
-	IsMessup   bool `bson:"ismessup" json:"isMessUp"`
-}
+// // FoodType : FoodStructure for a time
+// type FoodType struct {
+// 	IsSelected bool `bson:"isSelected" json:"isSelected"`
+// 	IsVeg      bool `bson:"isVeg" json:"isVeg"`
+// 	IsMessup   bool `bson:"ismessup" json:"isMessUp"`
+// }
 
 type studentCouponInfo struct {
 	UserID string
@@ -76,26 +81,28 @@ type totalFoodForDay struct {
 	DNVeg int
 }
 
-// DAO  :
-type DAO struct{}
+// // DAO  :
+// type DAO struct{}
 
-// Db :
-var Db *mgo.Database
+// // Db :
+// var Db *mgo.Database
 
-// Connect :
-func (c *DAO) Connect() {
-	session, err := mgo.Dial("172.16.1.213")
-	if err != nil {
-		log.Fatal(err)
-	}
-	Db = session.DB("rasoi")
-}
+// // Connect :
+// func (c *DAO) Connect() {
+// 	session, err := mgo.Dial("172.16.1.213")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	Db = session.DB("rasoi")
+// }
 
-func main() {
-	var d = DAO{}
-	d.Connect()
 
-	date := "2019-09-08"
+func DownloadCoupon(writer http.ResponseWriter, r *http.Request) {
+	// var d = DAO{}
+	// d.Connect()
+
+	params := mux.Vars(r)
+	date := strings.ToUpper(params["date"])
 
 	// NOTE: studentcouponss
 	{
@@ -115,7 +122,52 @@ func main() {
 		PrintTotalCountToPDFFUNC(false, date)
 	}
 
+	// Create ZIP
+	files := []string{"studentCouponInfoMessDown.pdf", "studentCouponInfoMessUp.pdf", "studentCouponsMessDown.pdf", "studentCouponsMessUp.pdf", "studentCouponTotalMessDown.pdf", "studentCouponTotalMessUp.pdf"}
+    output := "week_" + date + ".zip"
+
+    if err := ZipFiles(output, files); err != nil {
+        panic(err)
+    }
+	fmt.Println("Zipped File:", output)
+	
+	//Check if file exists and open
+	Openfile, err := os.Open(output)
+	defer Openfile.Close() //Close after function return
+	if err != nil {
+		//File not found, send 404
+		http.Error(writer, "File not found.", 404)
+		return
+	}
+
+	//File is found, create and send the correct headers
+
+	//Get the Content-Type of the file
+	//Create a buffer to store the header of the file in
+	FileHeader := make([]byte, 512)
+	//Copy the headers into the FileHeader buffer
+	Openfile.Read(FileHeader)
+	//Get content type of file
+	FileContentType := http.DetectContentType(FileHeader)
+
+	//Get the file size
+	FileStat, _ := Openfile.Stat()                     //Get info from file
+	FileSize := strconv.FormatInt(FileStat.Size(), 10) //Get file size as a string
+
+	//Send the headers
+	writer.Header().Set("Content-Disposition", "attachment; filename="+output)
+	writer.Header().Set("Content-Type", FileContentType)
+	writer.Header().Set("Content-Length", FileSize)
+
+	//Send the file
+	//We read 512 bytes from the file already, so we reset the offset back to 0
+	Openfile.Seek(0, 0)
+	io.Copy(writer, Openfile) //'Copy' the file to the client
+	return
+
 }
+
+
 
 // StudentCoupons :
 func StudentCoupons(mess bool, date string) {
@@ -429,29 +481,86 @@ func printCell(p *gofpdf.Fpdf, l float64, h float64, txt string) {
 	p.CellFormat(l, h, txt, fullBorder, contSameLine, middleAlign, noColor, noLink, emptyLink)
 }
 
-// GetDateFromTime :
-func GetDateFromTime(t time.Time) string {
-	return t.Format(time.RFC3339)[:10]
+// // GetDateFromTime :
+// func GetDateFromTime(t time.Time) string {
+// 	return t.Format(time.RFC3339)[:10]
+// }
+
+// // FirstDayofWeek :
+// func FirstDayofWeek(t time.Time) time.Time {
+// 	for t.Weekday() != time.Monday {
+// 		t = t.AddDate(0, 0, -1)
+// 	}
+// 	return t
+// }
+
+// // WholeWeekDates :
+// func WholeWeekDates(t time.Time) []time.Time {
+// 	var array []time.Time
+// 	t = FirstDayofWeek(t)
+// 	// // Add 7 days to get next week monday date
+// 	// t = t.AddDate(0, 0, 7)
+// 	array = append(array, t)
+// 	for t.Weekday() != time.Sunday {
+// 		t = t.AddDate(0, 0, 1)
+// 		array = append(array, t)
+// 	}
+// 	return array
+// }
+
+
+func ZipFiles(filename string, files []string) error {
+
+    newZipFile, err := os.Create(filename)
+    if err != nil {
+        return err
+    }
+    defer newZipFile.Close()
+
+    zipWriter := zip.NewWriter(newZipFile)
+    defer zipWriter.Close()
+
+    // Add files to zip
+    for _, file := range files {
+        if err = AddFileToZip(zipWriter, file); err != nil {
+            return err
+        }
+    }
+    return nil
 }
 
-// FirstDayofWeek :
-func FirstDayofWeek(t time.Time) time.Time {
-	for t.Weekday() != time.Monday {
-		t = t.AddDate(0, 0, -1)
-	}
-	return t
-}
 
-// WholeWeekDates :
-func WholeWeekDates(t time.Time) []time.Time {
-	var array []time.Time
-	t = FirstDayofWeek(t)
-	// // Add 7 days to get next week monday date
-	// t = t.AddDate(0, 0, 7)
-	array = append(array, t)
-	for t.Weekday() != time.Sunday {
-		t = t.AddDate(0, 0, 1)
-		array = append(array, t)
-	}
-	return array
+func AddFileToZip(zipWriter *zip.Writer, filename string) error {
+
+    fileToZip, err := os.Open(filename)
+    if err != nil {
+        return err
+    }
+    defer fileToZip.Close()
+
+    // Get the file information
+    info, err := fileToZip.Stat()
+    if err != nil {
+        return err
+    }
+
+    header, err := zip.FileInfoHeader(info)
+    if err != nil {
+        return err
+    }
+
+    // Using FileInfoHeader() above only uses the basename of the file. If we want
+    // to preserve the folder structure we can overwrite this with the full path.
+    header.Name = filename
+
+    // Change to deflate to gain better compression
+    // see http://golang.org/pkg/archive/zip/#pkg-constants
+    header.Method = zip.Deflate
+
+    writer, err := zipWriter.CreateHeader(header)
+    if err != nil {
+        return err
+    }
+    _, err = io.Copy(writer, fileToZip)
+    return err
 }
